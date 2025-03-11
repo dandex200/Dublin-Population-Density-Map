@@ -20,7 +20,7 @@ function App() {
 
     setMap(mapInstance);
 
-    fetch('/layers/Dublin_SA1_TOTALPOP.geojson') // Update path if necessary
+    fetch('/layers/Dublin_SA1_TOTALPOP_DEN.geojson') // Update path if necessary
       .then(response => response.json())
       .then(data => {
         // Create boundaries layer
@@ -50,10 +50,10 @@ function App() {
                 });
 
                 // Bind popup with population data
-                layer.bindPopup(`Total Population: ${feature.properties.total_pop}`).openPopup();
+                layer.bindPopup(`Total Population: ${feature.properties.total_pop}<br>Density: ${feature.properties.equalized_density.toFixed(4)}`).openPopup();
               } else {
                 // In choropleth mode, just show the popup without changing styles
-                layer.bindPopup(`Total Population: ${feature.properties.total_pop}`).openPopup();
+                layer.bindPopup(`Total Population: ${feature.properties.total_pop}<br>Density: ${feature.properties.equalized_density.toFixed(4)}`).openPopup();
               }
             });
           }
@@ -65,9 +65,9 @@ function App() {
         // Create choropleth layer
         const choroplethLayer = L.geoJSON(data, {
           style: feature => {
-            const pop = feature.properties.total_pop;
+            const density = feature.properties.equalized_density;
             return {
-              fillColor: getColor(pop),
+              fillColor: getColor(density),
               weight: 0.5,
               opacity: 1,
               color: 'white',
@@ -76,7 +76,7 @@ function App() {
           },
           onEachFeature: (feature, layer) => {
             layer.on('click', function () {
-              layer.bindPopup(`Total Population: ${feature.properties.total_pop}`).openPopup();
+              layer.bindPopup(`Total Population: ${feature.properties.total_pop}<br>Density: ${feature.properties.equalized_density.toFixed(4)}`).openPopup();
             });
           }
         });
@@ -119,11 +119,11 @@ function App() {
     setIsChoroplethActive(!isChoroplethActive);
   };
 
-  const getColor = (pop) => {
-    if (pop <= 208) return '#f2f0f7';
-    if (pop <= 247) return '#cbc9e2';
-    if (pop <= 289) return '#9e9ac8';
-    if (pop <= 344) return '#756bb1';
+  const getColor = (density) => {
+    if (density <= 0.02) return '#f2f0f7';
+    if (density <= 0.04) return '#cbc9e2';
+    if (density <= 0.06) return '#9e9ac8';
+    if (density <= 0.08) return '#756bb1';
     return '#54278f';
   };
 
